@@ -35,7 +35,7 @@ SET(VENDOR_DIR common/vendor)
 IF(${CMAKE_CXX_COMPILER} STREQUAL "/usr/bin/clang++") 
   SET(CMAKE_CXX_FLAGS_COMMON
       "-std=c++11 \
-      -stdlib=libc++ -pthread")
+      -stdlib=libc++ -lprotobuf -pthread")
 ENDIF()
 
 IF(${CMAKE_CXX_COMPILER} STREQUAL "/usr/bin/g++") 

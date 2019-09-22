@@ -64,7 +64,7 @@ if [[ -z "$MAKE_THREADS" ]]; then MAKE_THREADS=2; fi
 if [[ -z "$TYPE" ]]; then TYPE=Release; fi
 if [[ -z "$TEST" ]]; then TEST=""; fi
 if [[ -z "$COMPILER" ]]; then
-  COMPILER="/usr/bin/clang++"
+  COMPILER="/usr/bin/g++"
   RUN_FORMAT="yes"
 fi
 
