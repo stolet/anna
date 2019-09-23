@@ -13,6 +13,7 @@
 //  limitations under the License.
 
 #include <stdlib.h>
+#include <iostream>
 
 #include "benchmark.pb.h"
 #include "client/kvs_client.hpp"
@@ -91,8 +92,8 @@ void run(const unsigned &thread_id,
   string logger_name = "benchmark_log_" + std::to_string(thread_id);
   auto log = spdlog::basic_logger_mt(logger_name, log_file, true);
   log->flush_on(spdlog::level::info);
-
-  client.set_logger(log);
+  std::cout << "I am hereeeeeeeeeee 1" << std::endl;
+  //client.set_logger(log);
   unsigned seed = client.get_seed();
 
   // observed per-key avg latency
@@ -108,43 +109,33 @@ void run(const unsigned &thread_id,
   vector<zmq::pollitem_t> pollitems = {
       {static_cast<void *>(command_puller), 0, ZMQ_POLLIN, 0}};
 
+  std::cout << "I am hereeeeeeeeeee 2" << std::endl;
   while (true) {
-    kZmqUtil->poll(-1, &pollitems);
-
-    if (pollitems[0].revents & ZMQ_POLLIN) {
-      string msg = kZmqUtil->recv_string(&command_puller);
+    std::cout << "I am hereeeeeeeeeee 3" << std::endl;
+    //kZmqUtil->poll(-1, &pollitems);
+    std::cout << "I am hereeeeeeeeeee 4" << std::endl;
+    string mode = "LOAD";
+    bool benchmark_flag = true;
+    if (benchmark_flag) {
+      std::cout << "I am here 5" << std::endl;
+      string msg = "BENCHMARRKKKKKKKKKKKKKKKK";
       log->info("Received benchmark command: {}", msg);
 
-      vector<string> v;
-      split(msg, ':', v);
-      string mode = v[0];
-
-      if (mode == "CACHE") {
-        unsigned num_keys = stoi(v[1]);
-        // warm up cache
-        client.clear_cache();
-        auto warmup_start = std::chrono::system_clock::now();
-
-        for (unsigned i = 1; i <= num_keys; i++) {
-          if (i % 50000 == 0) {
-            log->info("Warming up cache for key {}.", i);
-          }
-
-          client.get_async(generate_key(i));
-        }
-
-        auto warmup_time = std::chrono::duration_cast<std::chrono::seconds>(
-                               std::chrono::system_clock::now() - warmup_start)
-                               .count();
-        log->info("Cache warm-up took {} seconds.", warmup_time);
-      } else if (mode == "LOAD") {
-        string type = v[1];
-        unsigned num_keys = stoi(v[2]);
-        unsigned length = stoi(v[3]);
-        unsigned report_period = stoi(v[4]);
-        unsigned time = stoi(v[5]);
-        double zipf = stod(v[6]);
-
+      if (benchmark_flag) {
+        std::cout << "I am here 6" << std::endl;
+        string type = "P";
+        //unsigned num_keys = stoi(v[2]);
+        //unsigned length = stoi(v[3]);
+        //unsigned report_period = stoi(v[4]);
+        //unsigned time = stoi(v[5]);
+        //double zipf = stod(v[6]);
+        
+	unsigned num_keys = 1000000;
+	unsigned length = 1000;
+	unsigned report_period = 10;
+	unsigned time = 90;
+	double zipf = 4;
+	
         map<unsigned, double> sum_probs;
         double base;
 
@@ -291,9 +282,9 @@ void run(const unsigned &thread_id,
               &pushers[thread.feedback_report_connect_address()]);
         }
       } else if (mode == "WARM") {
-        unsigned num_keys = stoi(v[1]);
-        unsigned length = stoi(v[2]);
-        unsigned total_threads = stoi(v[3]);
+        unsigned num_keys = 10000000;
+        unsigned length = 1000;
+        unsigned total_threads = 1;
         unsigned range = num_keys / total_threads;
         unsigned start = thread_id * range + 1;
         unsigned end = thread_id * range + 1 + range;
@@ -321,6 +312,7 @@ void run(const unsigned &thread_id,
       } else {
         log->info("{} is an invalid mode.", mode);
       }
+      break;
     }
   }
 }

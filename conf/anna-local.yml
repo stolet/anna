@@ -29,10 +29,10 @@ capacities: # in GB
   memory-cap: 1 
   ebs-cap: 0
 threads:
-  memory: 1
+  memory: 15
   ebs: 1
   routing: 1
-  benchmark: 1
+  benchmark: 15
 replication:
   memory: 1
   ebs: 0
